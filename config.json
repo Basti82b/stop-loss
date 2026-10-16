@@ -1,0 +1,10 @@
+{
+  "gruppe": "KI-Profitöre",
+  "atr_faktor": 3.5,
+  "atr_periode": 14,
+  "anker_tage": 126,
+  "limit_abschlag_atr": 0.5,
+  "be_min_atr": 1.0,
+  "hoch_stop_min_abstand_atr": 0.0,
+  "warnung_nahe_am_kurs_prozent": 2.0
+}
