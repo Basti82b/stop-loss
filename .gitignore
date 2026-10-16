@@ -1,0 +1,4 @@
+# Tagesdaten der Routine (werden bei jedem Lauf neu erzeugt)
+daten/
+quotes.json
+orders.json
