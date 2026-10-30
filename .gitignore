@@ -2,3 +2,4 @@
 daten/
 quotes.json
 orders.json
+__pycache__/
