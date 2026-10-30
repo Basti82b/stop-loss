@@ -34,7 +34,7 @@ def history(symbol, rng):
                         index=idx).dropna()
 
 
-def simulate(df, cfg, pause):
+def simulate(df, cfg, pause, schluss=False):
     pc = df["Close"].shift(1)
     tr = pd.concat([df["High"] - df["Low"], (df["High"] - pc).abs(), (df["Low"] - pc).abs()], axis=1).max(axis=1)
     atr = tr.ewm(alpha=1 / cfg["atr_periode"], adjust=False).mean().values
@@ -50,9 +50,17 @@ def simulate(df, cfg, pause):
             continue
         kand, _, _ = calc_candidate(c[t], anchor[t], atr[t], float("nan"), cfg)
         stop = kand if stop is None else max(stop, kand)
-        if lo[t + 1] <= stop:
+        if schluss and c[t + 1] <= stop and t + 2 < len(df):
+            # Schlusskurs-Stop: Verkauf zur Eroeffnung des naechsten Tages
+            exit_px = o[t + 2]
+            wert *= exit_px / c[t]
+            t += 1
+        elif not schluss and lo[t + 1] <= stop:
             exit_px = min(o[t + 1], stop)
             wert *= exit_px / c[t]
+        else:
+            exit_px = None
+        if exit_px is not None:
             ev = {"Datum": df.index[t + 1].date(), "Verkauf": round(exit_px, 4),
                   "Abstand_%": (stop / c[t] - 1) * 100}
             for n in (20, 60):
@@ -74,6 +82,7 @@ def main():
     ap.add_argument("--abstaende", default="0,1")
     ap.add_argument("--pause", type=int, default=20)
     ap.add_argument("--range", default="5y")
+    ap.add_argument("--schluss", action="store_true", help="nur Schlusskurse loesen aus")
     ap.add_argument("--out", default="daten/backtest_ereignisse.csv")
     args = ap.parse_args()
     base = load_cfg("config.json")
@@ -95,7 +104,7 @@ def main():
         for f in faktoren:
             for m in abstaende:
                 cfg = dict(base, atr_faktor=f, hoch_stop_min_abstand_atr=m)
-                ev, jahre, mit, halten = simulate(df, cfg, args.pause)
+                ev, jahre, mit, halten = simulate(df, cfg, args.pause, args.schluss)
                 for e in ev:
                     e.update({"Name": p["Name"], "ETF": etf, "Faktor": f, "Mindestabstand": m})
                 alle += ev
