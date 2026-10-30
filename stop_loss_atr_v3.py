@@ -45,6 +45,7 @@ OVERRIDES = {
     "US8740391003": ["TSFA.DE", "TSFA.F"],
     "IE00BK5BCD43": ["XMLD.DE", "IE00BK5BCD43.SG"],
     "IE00BDVPNG13": ["WTAI.MI", "WTAI.PA"],  # kein XETRA-Listing bei Yahoo; Mailand/Paris in EUR
+    "US02079K3059": ["ABEA.DE", "ABEA.F"],  # Alphabet A, die Suche findet das EUR-Listing nicht
 }
 
 
